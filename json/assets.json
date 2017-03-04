@@ -1,0 +1,41 @@
+{
+  "assets":{
+    "image":{
+
+      "tower":"img/tower.png",
+      "flag":"img/flag.png",
+
+      "icon_metal":"img/icons/icon_metal.png",
+      "icon_food":"img/icons/icon_food.png",
+      "icon_wood":"img/icons/icon_wood.png",
+
+      "res_metal":"img/icons/res_metal.png",
+      "res_food":"img/icons/res_food.png",
+      "res_wood":"img/icons/res_wood.png",
+
+      "life_bg":"img/life_bg.png",
+      "life_bar":"img/life_bar.png",
+
+      "bg_ui":"img/bg_ui.png",
+      "grass":"img/terrain/grass.png",
+      "tree":"img/terrain/tree.png",
+      "dirt":"img/terrain/dirt.png"
+
+    },
+    "spritesheet":{
+      "archer":{"src":"img/spritesheet/archer.png","fW":72,"fH":72},
+      "melee":{"src":"img/spritesheet/melee.png","fW":72,"fH":72},
+      "tank":{"src":"img/spritesheet/tank.png","fW":72,"fH":72},
+      "worker":{"src":"img/spritesheet/worker.png","fW":72,"fH":72},
+
+
+      "archer_button":{"src":"img/buttons/archer.png","fW":256,"fH":256},
+      "melee_button":{"src":"img/buttons/melee.png","fW":256,"fH":256},
+      "tank_button":{"src":"img/buttons/tank.png","fW":256,"fH":256},
+      "worker_button":{"src":"img/buttons/worker.png","fW":256,"fH":256},
+
+      "menu":{"src":"img/buttons/menu.png","fW":366,"fH":121}
+
+    }
+  }
+}
