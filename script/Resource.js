@@ -11,8 +11,14 @@ function Resource(type,x,y,state) {
     this.inputEnabled=true;
     this.type=type;
 
-    this.height*=this.state.display.width*0.1/this.width;
-    this.width=this.state.display.width*0.1;
+    this.height*=this.state.display.width*0.07/this.width;
+    this.width=this.state.display.width*0.07;
+
+    this.x+=this.width/2;
+    this.y+=this.height/2
+    this.anchor.setTo(0.5);
+
+    game.physics.arcade.enable(this);
 
     this.state.grps.res.add(this);
 
