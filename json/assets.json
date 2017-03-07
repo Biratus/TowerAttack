@@ -22,10 +22,10 @@
       "dirt":"img/terrain/dirt.png",
 
       "bg_menu":"img/bg_menu.png",
-      "level1":"img/buttons/menu/level1.png",
-      "level2":"img/buttons/menu/level2.png",
-      "level3":"img/buttons/menu/level3.png",
-      "credits":"img/buttons/menu/credits.png"
+      "b_level1":"img/buttons/menu/b_level1.png",
+      "b_level2":"img/buttons/menu/b_level2.png",
+      "b_level3":"img/buttons/menu/b_level3.png",
+      "b_credits":"img/buttons/menu/b_credits.png"
 
     },
     "spritesheet":{
