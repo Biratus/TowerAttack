@@ -108,7 +108,7 @@ UIHandler.prototype.update = function(){
         if( o.timer && o.timer.isRunning){
             //Get the remaining time
             var ration = o.timer.timeRemaining()*360 / Unit[o.unit_type.capitalizeFirstLetter()].PROD_TIME;
-            o.graph.arc(o.x, game.camera.height* (90/100), this.state.display.width/8, 0, game.math.degToRad(ration), true, 128);
+            o.graph.arc(o.x, o.y, this.state.display.width/8, 0, game.math.degToRad(ration), true, 128);
         }/*else{
             //Ask if we can create a range unit
             if(this.state.canCreateUnit(o.unit_type)) o.input.Enabled = true;
