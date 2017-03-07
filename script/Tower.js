@@ -50,7 +50,6 @@ Tower.prototype.update=function() {
         if(!this.last_attack || game.time.now-this.last_attack>=this.attack_delay) {
             this.state.attackUnit(this.focus);
             this.last_attack=game.time.now;
-            console.log("tower attack");
         }
     }
     if(this.life<=0 && !this.dead) {
@@ -62,6 +61,7 @@ Tower.prototype.update=function() {
         a.onComplete.add(function(){
             this.destroy();
         },this);*/
+        this.destroy();// -> will call onDestroy event -> check LevelState.init (at the end) to see tower.onDestroy callback
     }
     //this.life_grp.bar.width=this.life*this.life_grp.coef;
 

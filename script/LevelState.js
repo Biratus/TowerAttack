@@ -4,13 +4,12 @@
 function LevelState() {
     Phaser.State.call(this);
 }
-var level_param;
 
 LevelState.prototype = Object.create(Phaser.State.prototype);
 LevelState.prototype.constructor = LevelState;
-var b;
+
 LevelState.prototype.init=function(level_nb) {
-    level_param = JSON.parse(this.game.cache.getText("levels")).levels[level_nb];
+    var level_param = JSON.parse(this.game.cache.getText("levels")).levels[level_nb];
     //b=game.add.image(0,0,"tower");
     this.display={
         "height":0.9*game.world.height,
@@ -124,6 +123,7 @@ LevelState.prototype.preRender=function() {
     //Create resources' spawning area
     //needs to be in preRender because some points are set relative to terrain/flag/tower
     //so sprites need to be in their final place, which is what preRender waits for
+    var g=game.add.graphics(0,0);
     if(!this.current.res_area) {
         var points=[];
         var bounds={
@@ -173,37 +173,41 @@ LevelState.prototype.preRender=function() {
         this.current.res_area.getBounds=function(){return this.bounds;};
         this.raw.res_area.splice(0,1);
 
-        //this.res_timeout=new Timer(function(state){state.spawnRes();},2000,this);
+        /*g.beginFill(0xffffff);
+        g.drawPolygon(this.current.res_area.points);
+        g.endFill();*/
+
+        this.res_timeout=new Timer(function(state){state.spawnRes();},3000,this);
     }
 }
 
 LevelState.prototype.update=function() {
 
     if(this.win || this.lose()) this.backToMenu();
-    //this.uiHandler.update();
-    var transition_over=true;
-    this.current.tower.update();
+    game.physics.arcade.overlap(this.grps.unit,this.grps.res,function(unit,res) {
+        this.collectRes(res.id,unit.id)
+    },null,this);
     for(var i in this.units) {
         if(!this.units[i].exists) this.units.splice(i,1);
         else {
             if(this.current.tower.unitInRange(this.units[i])) {//&& this.current.tower.focus!=this.units[i].id && !this.current.tower.next_to_focus.contains(this.units[i].id)) {
-                if(this.current.tower.focus<0) {
-                    this.current.tower.focus=this.units[i].id;
-                    console.log('sethere');
-                }//Tower has no focus
+                if(this.current.tower.focus<0) this.current.tower.focus=this.units[i].id;//Tower has no focus
                 else if(this.current.tower.focus!=this.units[i].id) {//unit not focus by tower
                     if(this.current.tower.next_to_focus.indexOf(this.units[i].id)<0) this.current.tower.next_to_focus.push(this.units[i].id);
                 }
             }
-            if(this.transition && !this.units[i].arrived) transition_over=false;
-            this.units[i].update();
         }
     }
-    if(this.transition && transition_over) {
-        this.transition=false;
-        this.uiHandler.resume();
-        this.res_timeout.resume();
-    }
+    /*if(this.transition && Phaser.Point.distance({"x":this.display.x,"y":this.display.y},game.camera)<this.display.width*0.05){// && transition_over) {
+       game.camera.x=this.display.x;
+       game.camera.y=this.display.y;
+       game.camera.unfollow();
+       this.transition=false;
+       this.uiHandler.resume();
+       this.res_timeout.resume();
+       console.log('over');
+
+    }*/
 }
 
 LevelState.prototype.attackUnit=function(unit_id) {
@@ -240,19 +244,20 @@ LevelState.prototype.createUnit=function(unit_type) {
     this.resources.wood=(this.resources.wood-res_need.wood<0)?0:this.resources.wood-res_need.wood;
     this.resources.metal=(this.resources.metal-res_need.metal<0)?0:this.resources.metal-res_need.metal;
     this.resources.food=(this.resources.food-res_need<0)?0:this.resources.food-res_need.food;
-    console.log(this.resources);
 }
 
 LevelState.prototype.onResourceTap=function(res_id) {
-    console.log('resTap');
     var id, minDist=99999,res=this.getRes(res_id);
     for(var i in this.units) {
-        if(game.physics.arcade.distanceBetween(this.units[i],res)<minDist) id=this.units[i].id;
+        var d=game.physics.arcade.distanceBetween(this.units[i],res);
+        if(d<minDist) {
+            minDist=d;
+            id = this.units[i].id;
+        }
     }
-    this.getUnit(id).changePath(null,{"x":res.x,"y":res.y},null,null,function() {
-        this.state.collectRes(this.fetch_res,this.id);
-    },this.getUnit(id));
-    this.getUnit(id).fetch_res=res_id;
+    if(id<0) return;
+    //this.getUnit(id).fetch_res=res_id;
+    this.getUnit(id).changePath(null,{"x":res.x,"y":res.y});
 }
 
 LevelState.prototype.collectRes=function(res_id,unit_id) {
@@ -271,7 +276,6 @@ LevelState.prototype.collectRes=function(res_id,unit_id) {
 
 LevelState.prototype.spawnRes=function() {
     if(this.res_on_map.length<5) {
-        console.log('spawn');
         var type;
         do{
             var r=game.rnd.integerInRange(0,2);
@@ -292,7 +296,7 @@ LevelState.prototype.spawnRes=function() {
         do {
             x=game.rnd.between(this.current.res_area.getBounds().left,this.current.res_area.getBounds().right);
             y=game.rnd.between(this.current.res_area.getBounds().top,this.current.res_area.getBounds().bottom);
-            good=!this.current.res_area.contains(x,y);
+            good=this.current.res_area.contains(x,y);
         }while(!good)
         this.res_on_map.push(new Resource(type,x,y,this));
     }
@@ -301,43 +305,43 @@ LevelState.prototype.spawnRes=function() {
 
 LevelState.prototype.nextTower=function() {
     console.log('next');
-    return;
     this.uiHandler.pause();
     this.res_timeout.pause();
     //set new terrain coord
     var x,y;
-    if(this.raw.terrains[0].pos.align=='top') {
-        y=game.world.getBounds().top-game.world.getBounds().height;
-        x=game.world.getBounds().left+parseFloat(this.raw.terrains[0].pos.offset)*game.world.getBounds().width;
+    if(this.raw.terrains[0].pos.align=='top') {//not implemented for other sides
+        y=game.world.getBounds().top-this.display.height;
+        x=game.world.getBounds().left+this.raw.terrains[0].pos.offset*game.world.getBounds().width;
     }
+    console.log(x+" "+y);
     //create sprite accordingly
     this.next_terrain={"tree":[],"grass":[],"dirt":[]};
-    this.next_terrain.grass.push(game.add.tileSprite(x,y,game.world.getBounds().width,this.display.height,"grass"));
+    this.next_terrain.grass.push(game.add.tileSprite(x,y,game.world.getBounds().width,this.display.height,"grass",null,this.grps.terrain));
     var bmd=game.add.bitmapData(200,300);
     for(var t in this.raw.terrains[0]) {//each terrain type
         if(this.terrain.hasOwnProperty(t)) {
             var type = this.raw.terrains[0][t];
             //http://www.html5gamedevs.com/topic/7620-draw-solid-rectangle/
-            var pattern = bmd.context.createPattern(textures[t], "repeat");
+            var pattern = bmd.context.createPattern(game.cache.getImage(t), "repeat");
             for (var s in type) {//each shape in type
                 var shape = type[s].shape;
                 bmd.context.beginPath();
                 for (var i in shape) {
                     var point = shape[i];
-                    bmd.context[point.fx](point.points);
+                    bmd.context[point.fx].apply(bmd.context,point.points);
                 }
                 bmd.context.fillStyle = pattern;
-                bmd.closePath();
+                bmd.context.closePath();
                 bmd.context.fill();
 
                 var x1 = ((typeof type[s].pos.x) == "string") ? x+this.display.width* parseFloat(type[s].pos.x) : x+type[s].pos.x;
                 var y1 = ((typeof type[s].pos.y) == "string") ? y+this.display.height * parseFloat(type[s].pos.y) :y+ type[s].pos.y;
-                var spr = game.add.sprite(x1, y1, bmd.generateTexture());
+                var spr = game.add.sprite(x1, y1, bmd.generateTexture(),0,this.grps.terrain);
                 spr.crop(new Phaser.Rectangle(0,0,type[s].pos.width*200,type[s].pos.height*300));
                 if (type[s].pos.hasOwnProperty("aX")) spr.anchor.setTo(type[s].pos.aX, type[s].pos.aY);
                 spr.width = type[s].pos.width * this.display.width;
                 spr.height = type[s].pos.height * this.display.height;
-                this.next_terrain[type].push(spr);
+                this.next_terrain[t].push(spr);
                 bmd.clear(0,0,200,300);
             }
         }
@@ -346,28 +350,54 @@ LevelState.prototype.nextTower=function() {
 
     //create new flag and tower
     this.current.flag.x=x+this.display.width*this.raw.flags[0].x;
-    this.current.flag.x=y+this.display.height*this.raw.flags[0].y;
+    this.current.flag.y=y+this.display.height*this.raw.flags[0].y;
     this.raw.flags.shift();
 
 
-    this.current.tower=new Tower(this.raw.towers[0]);
+    this.current.tower=new Tower(this.raw.towers[0],this);
     this.current.tower.x+=x;
     this.current.tower.y+=y;
     this.raw.towers.shift();
 
+    this.current.unit_path=this.raw.units_path[0];
+    for(var i in this.current.unit_path) {
+        for(var j in this.current.unit_path[i]) {
+            this.current.unit_path[i][j]*=(j=="x")?this.display.width:this.display.height;
+            this.current.unit_path[i][j]+=(j=="x")?x:y;
+
+        }
+    }
+    this.raw.units_path.shift();
+
     this.current.res_area=null;
     //set units new goal to flag
+    var maxDist=0,index=0;
     for(var i in this.units) {
-        this.units[i].changePath(null,{"x":this.current.flag.x,"y":this.current.flag.y},null,null,function(){
+        this.units[i].changePath(null,new Phaser.Circle(this.current.flag.x,this.current.flag.y,this.display.width*0.1).random(),null,null,function(){
+            console.log(this.state.current.tower.getBounds());
             this.goToTower(this.state.current.tower);
         },this.units[i]);
+        var d=Phaser.Point.distance(this.current.tower,this.units[i]);
+        if(d>maxDist) {
+            maxDist=d;
+            index=i;
+        }
     }
+    game.world.setBounds((x<0)?x:0,(y<0)?y:0,Math.abs(x)+this.display.width,this.display.height*2);
+    //game.camera.follow(this.units[index]);//,Phaser.Camera.FOLLOW_TOPDOWN);
+    //this.display.x=x;
+    //this.display.y=y;
     //center camera on units
-    var t=game.add.tween(game.camera).to({"x":x,"y":y},Phaser.Easing.Circular.In,2500,true);
+    var t=game.add.tween(game.camera).to({"x":x,"y":y},3000,Phaser.Easing.Linear.In,true);
     t.onComplete.add(function(x,y) {
         this.terrain=this.next_terrain;
         this.next_terrain=null;
         game.world.setBounds(x,y,this.display.width,this.display.height);
+        this.display.x=x;
+        this.display.y=y;
+        this.transition=false;
+        this.uiHandler.resume();
+        this.res_timeout.resume();
     },this,x,y);
     this.transition=true;
 }
@@ -389,15 +419,14 @@ LevelState.prototype.getRes=function(id) {
 }
 
 LevelState.prototype.backToMenu=function() {
-    //this.uiHandler().pause();
+    this.uiHandler().pause();
     this.res_timeout.pause();
     console.log('ToMenu');
-    game.state.start('MenuState');
+    //game.state.start('MenuState');
 }
 
 LevelState.prototype.render=function() {
-   //game.debug.spriteBounds(this.current.tower,'red',false);
-    //game.debug.spriteBounds(this.current.flag,'blue',false);
+    game.debug.spriteBounds(this.uiHandler,'red',false);
 }
 
 String.prototype.capitalizeFirstLetter = function() {

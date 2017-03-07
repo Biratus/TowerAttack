@@ -13,9 +13,9 @@ function UIHandler (state, units){
 
     this.buttons=[];
 
-    var b=game.add.button(20, 20, "menu",function(){this.actionOnClickMenu();}, this, 1, 0,1,0);
-    b.height*=this.state.display.width*0.15/b.width;
-    b.width=this.state.display.width*0.15;
+    this.menu_b=game.add.button(20, 20, "menu",function(){this.actionOnClickMenu();}, this, 0);
+    this.menu_b.height*=this.state.display.width*0.15/this.menu_b.width;
+    this.menu_b.width=this.state.display.width*0.15;
 
     this.create_group=game.add.group();
 
@@ -25,11 +25,13 @@ function UIHandler (state, units){
     bg.height=game.world.height*0.1;
 
     this.create_group.add(bg);
-    var cell_size=game.world.width/units.length;
+    this.create_group.bg=bg;//a direct reference to the bg
+    this.create_group.b_grp=game.add.group();
+    this.create_group.cell_size=this.state.display.width/units.length;
 
     for(var i = 0; i < units.length ; i++){
         //console.log(cell_size/2+i*game.world.width/units.length+" "+bg.centerY);
-        var b=game.add.button(cell_size/2+i*game.world.width/units.length,bg.centerY,units[i]+"_button",function(){this.uiHandler.onUnitClick(this);},0,0,1,0);
+        var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",function(){this.uiHandler.onUnitClick(this);},0,0,1,null,this.create_group.b_grp);
 
         b.anchor.setTo(0.5);
         b.width*=0.9*bg.height/b.height;
@@ -48,7 +50,6 @@ function UIHandler (state, units){
         b.uiHandler=this;
 
         this.buttons.push(b);
-        this.create_group.add(this.buttons[this.buttons.length-1]);
     }
 }
 
@@ -68,7 +69,7 @@ UIHandler.prototype.onUnitClick=function(button) {
 
 UIHandler.prototype.checkCanCreate=function() {
     for(var i in this.buttons) {
-        if(!this.buttons[i].timer && !this.buttons[i].timer.isRunning) {
+        if(!this.buttons[i].timer || !this.buttons[i].timer.isRunning) {
             if(this.state.canCreateUnit(this.buttons[i].unit_type)) this.buttons[i].input.enabled=true;
             else this.buttons[i].input.enabled=false;
         }
@@ -76,15 +77,29 @@ UIHandler.prototype.checkCanCreate=function() {
     }
 }
 
+UIHandler.prototype.pause=function() {
+    for(var i in this.buttons) if(this.buttons[i].timer) this.buttons[i].timer.pause();
+}
+UIHandler.prototype.resume=function() {
+    for(var i in this.buttons) if(this.buttons[i].timer) this.buttons[i].timer.resume();
+}
+
 //During the update, we look if the buttons are clickable
 UIHandler.prototype.update = function(){
 
-    //this.create_group.x=this.state.display.x;
-    //this.create_group.y=this.state.display.y+game.camera.height;
+    if(this.create_group.bg.y>game.camera.view.bottom) {
+        console.log("move");
+        var add={"x":game.view.camera.x-this.create_group.bg.x,
+        "y":game.camera.view.bottom-this.create_group.bg.y};
+        for(var i in this.create_group.children) {
+            this.create_group.children[i].x+=add.x;
+            this.create_group.children[i].y+=add.y;
+        }
+    }
+    this.menu_b.x=game.camera.x+20;
+    this.menu_b.y=game.camera.y+20;
 
-    this.x=this.state.display.x;
-    this.y=this.state.display.y;
-
+    if(this.state.transition) return;
     for(var i in this.buttons) {
         var o=this.buttons[i];
         o.graph.clear();
@@ -106,21 +121,6 @@ UIHandler.prototype.update = function(){
 //Go to menu
 UIHandler.prototype.actionOnClickMenu = function() {
     this.state.backToMenu();
-}
-
-//Pause one of the button timer
-UIHandler.prototype.pause = function() {
-
-    for(var i in this.buttons) {
-        this.buttons[i].resume();
-    }
-}
-
-//Resume one of the button timer
-UIHandler.prototype.resume = function() {
-    for(var i in this.buttons) {
-        this.buttons[i].resume();
-    }
 }
 
 
