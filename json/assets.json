@@ -19,7 +19,13 @@
       "bg_ui":"img/bg_ui.png",
       "grass":"img/terrain/grass.png",
       "tree":"img/terrain/tree.png",
-      "dirt":"img/terrain/dirt.png"
+      "dirt":"img/terrain/dirt.png",
+
+      "bg_menu":"img/bg_menu.png",
+      "level1":"img/buttons/menu/level1.png",
+      "level2":"img/buttons/menu/level2.png",
+      "level3":"img/buttons/menu/level3.png",
+      "credits":"img/buttons/menu/credits.png"
 
     },
     "spritesheet":{

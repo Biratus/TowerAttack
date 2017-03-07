@@ -47,11 +47,13 @@ LevelState.prototype.init=function(level_nb) {
     //assign resources
     this.res_on_map=[];
 
-    this.resources={"wood":Math.round(level_param.res.wood*level_param.res.amount),
-        "metal":Math.round(level_param.res.metal*level_param.res.amount),
-    "food":Math.round(level_param.res.food*level_param.res.amount)};
+    this.resources={
+        "wood":Math.round(level_param.res.wood*level_param.res.amount),
+        "metal":Math.round(level_param.res.metal*level_param.res.amount), 
+        "food":Math.round(level_param.res.food*level_param.res.amount)};
 
-    this.totalRes={"wood":level_param.res.wood-this.resources.wood,
+    this.totalRes={
+        "wood":level_param.res.wood-this.resources.wood,
         "metal":level_param.res.metal-this.resources.metal,
         "food":level_param.res.metal-this.resources.food};
 
