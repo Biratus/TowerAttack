@@ -31,25 +31,30 @@ function UIHandler (state, units){
 
     for(var i = 0; i < units.length ; i++){
         //console.log(cell_size/2+i*game.world.width/units.length+" "+bg.centerY);
-        var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",function(){this.uiHandler.onUnitClick(this);},0,0,1,null,this.create_group.b_grp);
+        var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",null,0,0,1);
 
         b.anchor.setTo(0.5);
         b.width*=0.9*bg.height/b.height;
         b.height=0.9*bg.height;
+        b.events.onInputUp.add(function(){this.uiHandler.onUnitClick(this);},b);
 
+        b.setMask=function() {
+            this.graph=game.add.graphics(0,0);
+            this.graph.mask=game.add.graphics(0,0);
+            this.graph.mask.lineStyle(1, 0xffffff);
+            this.graph.mask.beginFill(0xffffff);
+            this.graph.mask.drawRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height);
+        }
         //console.log(b.width+" "+b.height);
 
-        b.graph=game.add.graphics(0,0);
-        b.graph.mask=game.add.graphics(0,0);
-        b.graph.mask.lineStyle(1, 0xffffff);
-        b.graph.mask.beginFill(0xffffff);
-        b.graph.mask.drawRect(b.x-b.width/2, b.y-b.height/2, b.width, b.height);
+        b.setMask();
 
         b.unit_type=units[i];
 
         b.uiHandler=this;
 
         this.buttons.push(b);
+        this.create_group.b_grp.add(this.buttons[this.buttons.length-1]);
     }
 }
 
@@ -89,11 +94,14 @@ UIHandler.prototype.update = function(){
 
     if(this.create_group.bg.y>game.camera.view.bottom) {
         console.log("move");
-        var add={"x":game.view.camera.x-this.create_group.bg.x,
+        var add={"x":game.camera.x-this.create_group.bg.x,
         "y":game.camera.view.bottom-this.create_group.bg.y};
-        for(var i in this.create_group.children) {
-            this.create_group.children[i].x+=add.x;
-            this.create_group.children[i].y+=add.y;
+        this.create_group.bg.x+=add.x;
+        this.create_group.bg.y+=add.y;
+
+        for(var i in this.create_group.b_grp.children) {
+            this.create_group.b_grp.children[i].x+=add.x;
+            this.create_group.b_grp.children[i].y+=add.y;
         }
     }
     this.menu_b.x=game.camera.x+20;
@@ -108,7 +116,7 @@ UIHandler.prototype.update = function(){
         if( o.timer && o.timer.isRunning){
             //Get the remaining time
             var ration = o.timer.timeRemaining()*360 / Unit[o.unit_type.capitalizeFirstLetter()].PROD_TIME;
-            o.graph.arc(o.x, o.y, this.state.display.width/8, 0, game.math.degToRad(ration), true, 128);
+            o.graph.arc(o.x, o.y, game.math.distance(o.x,o.y,o.getBounds().top,o.getBounds().left), 0, game.math.degToRad(ration), true, 128);
         }/*else{
             //Ask if we can create a range unit
             if(this.state.canCreateUnit(o.unit_type)) o.input.Enabled = true;

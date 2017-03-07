@@ -56,6 +56,12 @@ LevelState.prototype.init=function(level_nb) {
 
     //create background stuff
     this.terrain={"tree":[],"grass":[],"dirt":[]};
+    this.terrain.deleteAll=function(){
+        for(var i in this) {
+            for(var j in this[i]) {this[i][j].destroy();}
+            this[i]=[];
+        }
+    }
     this.terrain.grass.push(game.add.tileSprite(0,0,game.world.width,this.display.height,"grass",null,this.grps.terrain));
     this.terrain.grass[0].tileScale.setTo(1.5);
     var bmd=game.add.bitmapData(200,300);
@@ -310,13 +316,13 @@ LevelState.prototype.nextTower=function() {
     //set new terrain coord
     var x,y;
     if(this.raw.terrains[0].pos.align=='top') {//not implemented for other sides
-        y=game.world.getBounds().top-this.display.height;
-        x=game.world.getBounds().left+this.raw.terrains[0].pos.offset*game.world.getBounds().width;
+        x=game.world.bounds.left+this.raw.terrains[0].pos.offset*this.display.width;
+        y=game.world.bounds.top-this.display.height;
     }
     console.log(x+" "+y);
     //create sprite accordingly
     this.next_terrain={"tree":[],"grass":[],"dirt":[]};
-    this.next_terrain.grass.push(game.add.tileSprite(x,y,game.world.getBounds().width,this.display.height,"grass",null,this.grps.terrain));
+    this.next_terrain.grass.push(game.add.tileSprite(x,y,this.display.width,this.display.height,"grass",null,this.grps.terrain));
     var bmd=game.add.bitmapData(200,300);
     for(var t in this.raw.terrains[0]) {//each terrain type
         if(this.terrain.hasOwnProperty(t)) {
@@ -374,7 +380,7 @@ LevelState.prototype.nextTower=function() {
     var maxDist=0,index=0;
     for(var i in this.units) {
         this.units[i].changePath(null,new Phaser.Circle(this.current.flag.x,this.current.flag.y,this.display.width*0.1).random(),null,null,function(){
-            console.log(this.state.current.tower.getBounds());
+            //console.log(this.state.current.tower.getBounds());
             this.goToTower(this.state.current.tower);
         },this.units[i]);
         var d=Phaser.Point.distance(this.current.tower,this.units[i]);
@@ -389,16 +395,19 @@ LevelState.prototype.nextTower=function() {
     //this.display.y=y;
     //center camera on units
     var t=game.add.tween(game.camera).to({"x":x,"y":y},3000,Phaser.Easing.Linear.In,true);
-    t.onComplete.add(function(x,y) {
+    t.onComplete.add(function(c) {
+        this.terrain.deleteAll();
         this.terrain=this.next_terrain;
         this.next_terrain=null;
-        game.world.setBounds(x,y,this.display.width,this.display.height);
+        //game.world.setBounds(c.x,c.y,this.display.width,c.height);
         this.display.x=x;
         this.display.y=y;
         this.transition=false;
+        for(var i in this.uiHandler.buttons) this.uiHandler.buttons[i].setMask();
         this.uiHandler.resume();
         this.res_timeout.resume();
-    },this,x,y);
+    },this);
+    this.res_on_map=[];
     this.transition=true;
 }
 
