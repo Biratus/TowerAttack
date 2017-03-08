@@ -67,26 +67,32 @@ function Unit(name,flag,tower,state) {
         }
         this.pi=0;
         if(onfinish) this.onPathFinish.add(onfinish,ctx,arg);
+        this.degree =Math.round(180 * (p.angle) / Math.PI);
     };
     this.attackTower = function(){
-        if(!this.last_attack) {
-            this.state.attackTower(this.id);
-            this.last_attack=game.time.now;
-        }
-        else {
-            if(game.time.now-this.last_attack>=this.attack_delay) this.last_attack=null;
-        }
+    	if(this.life > 0){
+    		this.animations.play("attackUp");
+ 
+	        if(!this.last_attack) {
+	            this.state.attackTower(this.id);
+	            this.last_attack=game.time.now;
+	        }
+	        else {
+	            if(game.time.now-this.last_attack>=this.attack_delay) this.last_attack=null;
+	        }
+    	}
     }
 
     this.update = function(){
         if(this.arrived) this.attackTower();
         else {
+
             var graph=game.add.graphics(0,0);
 
             this.x=this.path[this.pi].x;
             this.y=this.path[this.pi].y;
            /* graph.beginFill(0xffffff);
-            graph.drawCircle(this.x,this.y,5);
+            graph.drawCircle(this.x,this.y,5);f
             graph.endFill()*/
             //TODO change animation if needed
 
@@ -94,15 +100,52 @@ function Unit(name,flag,tower,state) {
             if(this.pi>=this.path.length) {
                 this.arrived=true;
                 this.onPathFinish.dispatch();
-            }
+            } 
+        
+        if(typeof this.degree != 'null'){
+	      	if(this.degree <= 30 && this.degree > -30) {
+	      		//Right
+	      		this.animations.play('runSide');
+	      		this.scale.setTo(2);
+	      	} else if(this.degree <= -30 && this.degree > -60){
+	      		//Up Right
+	      		this.animations.play('runUpSide');
+	      		this.scale.setTo(2);
+	      	} else if(this.degree <= -60 && this.degree > -120){
+	      		//Up
+	      		this.animations.play('runUp');
+	       		this.angle=0;
+	       		this.scale.setTo(2);
+	       	} else if(this.degree <= -120 && this.degree >-150) {
+	       		//Up Left
+	       		this.animations.play('runUpSide'); 
+	      	 	this.scale.setTo(-2,2);
+	        } else if(this.degree >=-150 && this.degree >150){
+	        	//Left
+	        	this.animations.play('runSide');
+	        	this.scale.setTo(-2,2);
+	        } else if(this.degree <=150 && this.degree >120) {
+	        	//Down Left
+	        	this.animations.play('runDownSide'); 
+	        	this.scale.setTo(-2,2);
+	        } else if(this.degree <=120 && this.degree >60){
+	        	//Down
+	        	this.animations.play('runDown');
+	        	this.scale.setTo(2);
+	        } else if(this.degree <= 60 && this.degree >30){
+	      		//Down Right
+	      		this.animations.play('runDownSide');
+	      		this.scale.setTo(2);
+	      	} 
+	      }
 
         }
         //this.attackTower(this.tower);
     }
 
     this.kill=function(){
-        this.destroy();
-        //this.animations.play('die',20,false,true);
+    	this.animations.play('die'); 
+       if(this.animations.play('die').loopCount==1) this.destroy();
     }
 
     this.goToTower=function(tower,linear) {
@@ -162,6 +205,20 @@ Unit.Melee=function() {
     this.attack_delay=2000;
     this.speed=2;
     this.range=100;
+
+    //Animations
+    this.animations.add('runUp',[0,5,10,15,20],5,true);
+    this.animations.add('runUpSide',[1,6,11,16,21],5,true);
+    this.animations.add('runSide',[2,7,12,17,22],5,true);
+    this.animations.add('runDownSide',[3,8,13,18,23],5,true);
+    this.animations.add('runDown',[4,9,14,19,24],5,true);
+
+    this.animations.add('attackUp',[25,30,35,40],4,true);
+    this.animations.add('attackUpSide',[26,31,36,41],4,true);
+    this.animations.add('attackSide',[27,32,37,42],4,true);
+    this.animations.add('attackDownSide',[28,33,38,43],4,true);
+
+    this.animations.add('die',[50,55,60],3,true);
 }
 
 Unit.Melee.RES_NEEDED={wood:1,
@@ -177,6 +234,20 @@ Unit.Tank=function() {
     this.attack_delay=2000;
     this.speed=2;
     this.range=100;
+
+    //Animations
+    this.animations.add('runUp',[0,5,10,15,20],5,true);
+    this.animations.add('runUpSide',[1,6,11,16,21],5,true);
+    this.animations.add('runSide',[2,7,12,17,22],5,true);
+    this.animations.add('runDownSide',[3,8,13,18,23],5,true);
+    this.animations.add('runDown',[4,9,14,19,24],5,true);
+
+    this.animations.add('attackUp',[25,30,35,40],4,true);
+    this.animations.add('attackUpSide',[26,31,36,41],4,true);
+    this.animations.add('attackSide',[27,32,37,42],4,true);
+    this.animations.add('attackDownSide',[28,33,38,43],4,true);
+
+    this.animations.add('die',[50,55,60],3,true);
 }
 
 Unit.Tank.RES_NEEDED={wood:1,
@@ -192,6 +263,20 @@ Unit.Archer=function() {
     this.attack_delay=2000;
     this.speed=2;
     this.range=100;
+
+    //Animations
+    this.animations.add('runUp',[0,5,10,15,20],5,true);
+    this.animations.add('runUpSide',[1,6,11,16,21],5,true);
+    this.animations.add('runSide',[2,7,12,17,22],5,true);
+    this.animations.add('runDownSide',[3,8,13,18,23],5,true);
+    this.animations.add('runDown',[4,9,14,19,24],5,true);
+
+    this.animations.add('attackUp',[25,30,35,40],4,true);
+    this.animations.add('attackUpSide',[26,31,36,41],4,true);
+    this.animations.add('attackSide',[27,32,37,42],4,true);
+    this.animations.add('attackDownSide',[28,33,38,43],4,true);
+
+    this.animations.add('die',[50,55,60],3,true);
 }
 
 Unit.Archer.RES_NEEDED={wood:1,
@@ -207,6 +292,20 @@ Unit.Worker=function() {
     this.attack_delay=2000;
     this.speed=2;
     this.range=100;
+
+    //Animations
+    this.animations.add('runUp',[0,5,10,15,20],5,true);
+    this.animations.add('runUpSide',[1,6,11,16,21],5,true);
+    this.animations.add('runSide',[2,7,12,17,22],5,true);
+    this.animations.add('runDownSide',[3,8,13,18,23],5,true);
+    this.animations.add('runDown',[4,9,14,19,24],5,true);
+
+    this.animations.add('attackUp',[25,30,35,40],4,true);
+    this.animations.add('attackUpSide',[26,31,36,41],4,true);
+    this.animations.add('attackSide',[27,32,37,42],4,true);
+    this.animations.add('attackDownSide',[28,33,38,43],4,true);
+
+    this.animations.add('die',[50,55,60],3,true);
 }
 
 Unit.Worker.RES_NEEDED={wood:1,
