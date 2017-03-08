@@ -55,6 +55,32 @@ function UIHandler (state, units){
 
         this.buttons.push(b);
         this.create_group.b_grp.add(this.buttons[this.buttons.length-1]);
+
+        //Ressources
+        var rectangle = game.add.graphics(0,0);
+        rectangle.beginFill(0x000000);
+        rectangle.lineStyle(0.5, 0xbc8f2f);
+        rectangle.drawRect(game.world.width-150, game.world.height*0.9-20, 150, 20);
+        rectangle.endFill();
+
+        this.text = game.add.text(game.world.width, game.world.height*0.9+2, "x "+this.state.resources.food+"         x "+this.state.resources.wood+"         x "+this.state.resources.metal+" ", {
+        font: "12px Arial",
+        fill: "#fff",
+        align: "center"
+    });
+        this.text.anchor.setTo(1,1);
+
+        var spriteFood = this.game.add.sprite(game.world.width-126, game.world.height*0.9-2, "res_food");
+        spriteFood.anchor.setTo(1,1);
+        spriteFood.scale.setTo(0.13, 0.13);
+
+        spriteWood = this.game.add.sprite(game.world.width-75, game.world.height*0.9-2, "res_wood");
+        spriteWood.anchor.setTo(1,1);
+        spriteWood.scale.setTo(0.2, 0.2);
+
+        spriteMetal = this.game.add.sprite(game.world.width-26, game.world.height*0.9-2, "res_metal");
+        spriteMetal.anchor.setTo(1,1);
+        spriteMetal.scale.setTo(0.12, 0.12);
     }
 }
 
@@ -124,8 +150,11 @@ UIHandler.prototype.update = function(){
         }*/
         o.graph.endFill();
     }
-}
 
+    //Resources
+    this.text.setText("x "+this.state.resources.food+"         x "+this.state.resources.wood+"         x "+this.state.resources.metal+" ");
+}
+    
 //Go to menu
 UIHandler.prototype.actionOnClickMenu = function() {
     this.state.backToMenu();
