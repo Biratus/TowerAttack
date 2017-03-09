@@ -46,13 +46,9 @@ LevelState.prototype.init=function(level_nb) {
     //assign resources
     this.res_on_map=[];
 
-    this.resources={
-        "wood":Math.round(level_param.res.wood*level_param.res.amount),
-        "metal":Math.round(level_param.res.metal*level_param.res.amount), 
-        "food":Math.round(level_param.res.food*level_param.res.amount)};
+    this.resources=new ResourceHandler(this,Math.round(level_param.res.wood*level_param.res.amount),Math.round(level_param.res.metal*level_param.res.amount),Math.round(level_param.res.food*level_param.res.amount));
 
-    this.totalRes={
-        "wood":level_param.res.wood-this.resources.wood,
+    this.totalRes={"wood":level_param.res.wood-this.resources.wood,
         "metal":level_param.res.metal-this.resources.metal,
         "food":level_param.res.metal-this.resources.food};
 
@@ -65,7 +61,7 @@ LevelState.prototype.init=function(level_nb) {
         }
     }
     this.terrain.grass.push(game.add.tileSprite(0,0,game.world.width,this.display.height,"grass",null,this.grps.terrain));
-    this.terrain.grass[0].tileScale.setTo(1.5);
+    //this.terrain.grass[0].tileScale.setTo(1.5);
     var bmd=game.add.bitmapData(200,300);
     for(var t in level_param.terrains[0]) {//each terrain type
         var type=level_param.terrains[0][t];
@@ -92,7 +88,7 @@ LevelState.prototype.init=function(level_nb) {
 
             var x=((typeof type[s].pos.x)=="string")?game.world.width*parseFloat(type[s].pos.x):type[s].pos.x;
             var y=((typeof type[s].pos.y)=="string")?this.display.height*parseFloat(type[s].pos.y):type[s].pos.y;
-            var spr=game.add.sprite(x,y,bmd.generateTexture(),null,this.grps.terrain);
+            var spr=game.add.sprite(x,y,bmd.generateTexture(t+" "+s),null,this.grps.terrain);
             spr.crop(new Phaser.Rectangle(0,0,type[s].pos.width*200,type[s].pos.height*300));
             if(type[s].pos.hasOwnProperty("aX")) spr.anchor.setTo(type[s].pos.aX,type[s].pos.aY);
             spr.width=type[s].pos.width*game.world.width;
@@ -131,8 +127,8 @@ LevelState.prototype.preRender=function() {
     //Create resources' spawning area
     //needs to be in preRender because some points are set relative to terrain/flag/tower
     //so sprites need to be in their final place, which is what preRender waits for
-    var g=game.add.graphics(0,0);
-    if(!this.current.res_area) {
+    //var g=game.add.graphics(this.display.x,this.display.y);
+    if(!this.current.res_area && !this.transition) {
         var points=[];
         var bounds={
             "top":9999,
@@ -153,21 +149,21 @@ LevelState.prototype.preRender=function() {
                 var index=parseInt(obj.x.split("_")[0]);
                 var side=obj.x.split("_")[1];
                 if(parseInt(index)) {
-                    pt.x=this.terrain.tree[index].getBounds()[side];
+                    pt.x=this.terrain.tree[parseInt(index)][side];
                 }
-                else pt.x=this.current[index].getBounds()[side];
+                else pt.x=this.current[index][side];
             }
-            else pt.x=obj.x*game.world.width/200;
+            else pt.x=this.display.x+obj.x*this.display.width/200;
 
             if((typeof obj.y)=="string") {//relative to object
                 var index=obj.y.split("_")[0];
                 var side=obj.y.split("_")[1];
                 if(parseInt(index)) {
-                    pt.y=this.terrain.tree[index].getBounds()[side];
+                    pt.y=this.terrain.tree[parseInt(index)][side];
                 }
-                else pt.y=this.current[index].getBounds()[side];
+                else pt.y=this.current[index][side];
             }
-            else pt.y=obj.y*this.display.height/300;
+            else pt.y=this.display.y+obj.y*this.display.height/300;
             points.push(pt);
 
             if(pt.x<bounds.left) bounds.left=pt.x;
@@ -183,7 +179,9 @@ LevelState.prototype.preRender=function() {
 
         /*g.beginFill(0xffffff);
         g.drawPolygon(this.current.res_area.points);
-        g.endFill();*/
+        g.endFill();
+
+        setTimeout(function(g){g.destroy()},2000,g);*/
 
         this.res_timeout=new Timer(function(state){state.spawnRes();},3000,this);
     }
@@ -195,10 +193,17 @@ LevelState.prototype.update=function() {
     game.physics.arcade.overlap(this.grps.unit,this.grps.res,function(unit,res) {
         this.collectRes(res.id,unit.id)
     },null,this);
+    if(!this.current.tower.unitInRange((this.current.tower.focus))) {
+        if(this.current.tower.next_to_focus.length>0) {
+            this.current.tower.focus=this.current.tower.next_to_focus[0];
+            this.current.tower.next_to_focus.shift();
+        }
+        else this.current.tower.focus=-1;
+    }
     for(var i in this.units) {
         if(!this.units[i].exists) this.units.splice(i,1);
         else {
-            if(this.current.tower.unitInRange(this.units[i])) {//&& this.current.tower.focus!=this.units[i].id && !this.current.tower.next_to_focus.contains(this.units[i].id)) {
+            if(this.current.tower.unitInRange(this.units[i])) {
                 if(this.current.tower.focus<0) this.current.tower.focus=this.units[i].id;//Tower has no focus
                 else if(this.current.tower.focus!=this.units[i].id) {//unit not focus by tower
                     if(this.current.tower.next_to_focus.indexOf(this.units[i].id)<0) this.current.tower.next_to_focus.push(this.units[i].id);
@@ -206,26 +211,30 @@ LevelState.prototype.update=function() {
             }
         }
     }
-    /*if(this.transition && Phaser.Point.distance({"x":this.display.x,"y":this.display.y},game.camera)<this.display.width*0.05){// && transition_over) {
-       game.camera.x=this.display.x;
-       game.camera.y=this.display.y;
-       game.camera.unfollow();
-       this.transition=false;
-       this.uiHandler.resume();
-       this.res_timeout.resume();
-       console.log('over');
+}
 
-    }*/
+LevelState.prototype.paused=function() {
+    console.log('pause');
+    this.uiHandler.pause();
+    this.res_timeout.pause();
+}
+
+LevelState.prototype.resumed=function() {
+    console.log('resume');
+    this.uiHandler.resume();
+    this.res_timeout.resume();
 }
 
 LevelState.prototype.attackUnit=function(unit_id) {
     var u=this.getUnit(unit_id);
     u.life-=this.current.tower.damage;
-    if(u.life<=0) this.killUnit(unit_id);
+    if(u.life<=0 && !u.dead) this.killUnit(unit_id);
 }
 
 LevelState.prototype.attackTower=function(unit_id) {
+    if(this.current.tower.dead) return false;
     this.current.tower.life-=this.getUnit(unit_id).damage;
+    return true;
 }
 
 LevelState.prototype.killUnit=function(unit_id) {
@@ -249,9 +258,9 @@ LevelState.prototype.canCreateUnit=function(unit_type) {
 LevelState.prototype.createUnit=function(unit_type) {
     this.units.push(new Unit(unit_type,this.current.flag,this.current.tower,this));
     var res_need=Unit[unit_type.capitalizeFirstLetter()].RES_NEEDED;
-    this.resources.wood=(this.resources.wood-res_need.wood<0)?0:this.resources.wood-res_need.wood;
-    this.resources.metal=(this.resources.metal-res_need.metal<0)?0:this.resources.metal-res_need.metal;
-    this.resources.food=(this.resources.food-res_need<0)?0:this.resources.food-res_need.food;
+    this.resources.wood=this.resources.wood-res_need.wood;
+    this.resources.metal=this.resources.metal-res_need.metal;
+    this.resources.food=this.resources.food-res_need.food;
 }
 
 LevelState.prototype.onResourceTap=function(res_id) {
@@ -278,7 +287,7 @@ LevelState.prototype.collectRes=function(res_id,unit_id) {
         }
     }
     this.uiHandler.checkCanCreate();
-    console.log(this.resources);
+    //console.log(this.resources);
     this.getUnit(unit_id).goToTower(this.current.tower,true);
 }
 
@@ -367,6 +376,7 @@ LevelState.prototype.nextTower=function() {
     this.current.tower.y+=y;
     this.raw.towers.shift();
 
+    //reset unit path
     this.current.unit_path=this.raw.units_path[0];
     for(var i in this.current.unit_path) {
         for(var j in this.current.unit_path[i]) {
@@ -382,7 +392,6 @@ LevelState.prototype.nextTower=function() {
     var maxDist=0,index=0;
     for(var i in this.units) {
         this.units[i].changePath(null,new Phaser.Circle(this.current.flag.x,this.current.flag.y,this.display.width*0.1).random(),null,null,function(){
-            //console.log(this.state.current.tower.getBounds());
             this.goToTower(this.state.current.tower);
         },this.units[i]);
         var d=Phaser.Point.distance(this.current.tower,this.units[i]);
@@ -391,10 +400,12 @@ LevelState.prototype.nextTower=function() {
             index=i;
         }
     }
+    for(var i in this.res_on_map) {
+        this.res_on_map[i].destroy();
+    }
+    this.res_on_map=[];
     game.world.setBounds((x<0)?x:0,(y<0)?y:0,Math.abs(x)+this.display.width,this.display.height*2);
-    //game.camera.follow(this.units[index]);//,Phaser.Camera.FOLLOW_TOPDOWN);
-    //this.display.x=x;
-    //this.display.y=y;
+
     //center camera on units
     var t=game.add.tween(game.camera).to({"x":x,"y":y},3000,Phaser.Easing.Linear.In,true);
     t.onComplete.add(function(c) {
@@ -404,12 +415,12 @@ LevelState.prototype.nextTower=function() {
         //game.world.setBounds(c.x,c.y,this.display.width,c.height);
         this.display.x=x;
         this.display.y=y;
-        this.transition=false;
         for(var i in this.uiHandler.buttons) this.uiHandler.buttons[i].setMask();
         this.uiHandler.resume();
         this.res_timeout.resume();
+        this.transition=false;
     },this);
-    this.res_on_map=[];
+
     this.transition=true;
 }
 
@@ -437,7 +448,8 @@ LevelState.prototype.backToMenu=function() {
 }
 
 LevelState.prototype.render=function() {
-    game.debug.spriteBounds(this.uiHandler,'red',false);
+    game.debug.text(game.time.fps || '--',20, 100, "#000000");
+    //game.debug.spriteBounds(this.current.tower,'red',false);
 }
 
 String.prototype.capitalizeFirstLetter = function() {

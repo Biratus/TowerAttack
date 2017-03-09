@@ -8,6 +8,7 @@ BootState.prototype = Object.create(Phaser.State.prototype);
 BootState.prototype.constructor = BootState;
 
 BootState.prototype.preload=function() {
+    game.time.advancedTiming = true;
     this.load.text("assets","json/assets.json");
 }
 

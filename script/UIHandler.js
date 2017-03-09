@@ -13,7 +13,7 @@ function UIHandler (state, units){
 
     this.buttons=[];
 
-    this.menu_b=game.add.button(20, 20, "menu",function(){this.actionOnClickMenu();}, this, 0);
+    this.menu_b=game.add.button(20, 20, "menu",function(){this.actionOnClickMenu();}, this, 0,0,0,0,this);
     this.menu_b.height*=this.state.display.width*0.15/this.menu_b.width;
     this.menu_b.width=this.state.display.width*0.15;
 
@@ -23,9 +23,9 @@ function UIHandler (state, units){
     bg.anchor.setTo(0,1);
     bg.width=game.world.width;
     bg.height=game.world.height*0.1;
-
     this.create_group.add(bg);
     this.create_group.bg=bg;//a direct reference to the bg
+
     this.create_group.b_grp=game.add.group();
     this.create_group.cell_size=this.state.display.width/units.length;
 
@@ -39,8 +39,8 @@ function UIHandler (state, units){
         b.events.onInputUp.add(function(){this.uiHandler.onUnitClick(this);},b);
 
         b.setMask=function() {
-            this.graph=game.add.graphics(0,0);
-            this.graph.mask=game.add.graphics(0,0);
+            this.graph=this.graph || game.add.graphics(0,0);
+            this.graph.mask=this.graph.mask || game.add.graphics(0,0);
             this.graph.mask.lineStyle(1, 0xffffff);
             this.graph.mask.beginFill(0xffffff);
             this.graph.mask.drawRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height);
@@ -55,33 +55,9 @@ function UIHandler (state, units){
 
         this.buttons.push(b);
         this.create_group.b_grp.add(this.buttons[this.buttons.length-1]);
-
-        //Ressources
-        var rectangle = game.add.graphics(0,0);
-        rectangle.beginFill(0x000000);
-        rectangle.lineStyle(0.5, 0xbc8f2f);
-        rectangle.drawRect(game.world.width-150, game.world.height*0.9-20, 150, 20);
-        rectangle.endFill();
-
-        this.text = game.add.text(game.world.width, game.world.height*0.9+2, "x "+this.state.resources.food+"         x "+this.state.resources.wood+"         x "+this.state.resources.metal+" ", {
-        font: "12px Arial",
-        fill: "#fff",
-        align: "center"
-    });
-        this.text.anchor.setTo(1,1);
-
-        var spriteFood = this.game.add.sprite(game.world.width-126, game.world.height*0.9-2, "res_food");
-        spriteFood.anchor.setTo(1,1);
-        spriteFood.scale.setTo(0.13, 0.13);
-
-        spriteWood = this.game.add.sprite(game.world.width-75, game.world.height*0.9-2, "res_wood");
-        spriteWood.anchor.setTo(1,1);
-        spriteWood.scale.setTo(0.2, 0.2);
-
-        spriteMetal = this.game.add.sprite(game.world.width-26, game.world.height*0.9-2, "res_metal");
-        spriteMetal.anchor.setTo(1,1);
-        spriteMetal.scale.setTo(0.12, 0.12);
     }
+    this.create_group.add(this.create_group.b_grp);
+
 }
 
 UIHandler.prototype = Object.create(Phaser.Group.prototype);
@@ -118,8 +94,10 @@ UIHandler.prototype.resume=function() {
 //During the update, we look if the buttons are clickable
 UIHandler.prototype.update = function(){
 
-    if(this.create_group.bg.y>game.camera.view.bottom) {
-        console.log("move");
+    if(this.create_group.bg.y!=game.camera.view.bottom) {
+        this.menu_b.x=game.camera.x+20;
+        this.menu_b.y=game.camera.y+20;
+
         var add={"x":game.camera.x-this.create_group.bg.x,
         "y":game.camera.view.bottom-this.create_group.bg.y};
         this.create_group.bg.x+=add.x;
@@ -130,9 +108,6 @@ UIHandler.prototype.update = function(){
             this.create_group.b_grp.children[i].y+=add.y;
         }
     }
-    this.menu_b.x=game.camera.x+20;
-    this.menu_b.y=game.camera.y+20;
-
     if(this.state.transition) return;
     for(var i in this.buttons) {
         var o=this.buttons[i];
@@ -143,18 +118,11 @@ UIHandler.prototype.update = function(){
             //Get the remaining time
             var ration = o.timer.timeRemaining()*360 / Unit[o.unit_type.capitalizeFirstLetter()].PROD_TIME;
             o.graph.arc(o.x, o.y, game.math.distance(o.x,o.y,o.getBounds().top,o.getBounds().left), 0, game.math.degToRad(ration), true, 128);
-        }/*else{
-            //Ask if we can create a range unit
-            if(this.state.canCreateUnit(o.unit_type)) o.input.Enabled = true;
-            else o.input.enabled = false;
-        }*/
+        }
         o.graph.endFill();
     }
-
-    //Resources
-    this.text.setText("x "+this.state.resources.food+"         x "+this.state.resources.wood+"         x "+this.state.resources.metal+" ");
 }
-    
+
 //Go to menu
 UIHandler.prototype.actionOnClickMenu = function() {
     this.state.backToMenu();

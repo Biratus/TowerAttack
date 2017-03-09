@@ -28,6 +28,7 @@ LoadState.prototype.create=function() {
     game.scale.scaleMode=game.scale.SHOW_ALL;
     game.scale.pageAlignHorizontally=true;
     game.scale.pageAlignVertically=true;
+    game.renderer.renderSession.roundPixels = true;
     game.scale.forceOrientation(false,true);
     game.state.start('MenuState');
 }

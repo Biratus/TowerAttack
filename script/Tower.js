@@ -24,13 +24,16 @@ function Tower(param,state) {
     this.last_attack=null;
     this.life=param.life;
 
-    /*this.life_grp=game.add.group();
+    this.life_grp=game.add.group();
     var bg=game.add.image(0,0,'life_bg',0,this.life_grp);
     this.life_grp.bar=game.add.image(1,1,'life_bar',0,this.life_grp);
     this.life_grp.coef=38/this.life;
 
     this.life_grp.x=this.x-bg.width/2;
-    this.life_grp.y=this.getBounds().top-5-bg.height;*/
+    this.life_grp.y=this.getBounds().top-5-bg.height;
+
+    this.life_grp.height*=this.width*0.5/this.life_grp.width;
+    this.life_grp.width=this.width/2;
 
     var _focus=-1;
     this.next_to_focus=[];
@@ -38,7 +41,7 @@ function Tower(param,state) {
         get:function(){return _focus},
        set:function(val) {
            _focus=val;
-           if(val>=0) this.last_attack=game.time.now-this.attack_delay/2;
+           if(val>=0) this.last_attack=game.time.now-this.attack_delay;//so unit don't get shot instantly
        }
     });
 }
@@ -54,16 +57,25 @@ Tower.prototype.update=function() {
     }
     if(this.life<=0 && !this.dead) {
         this.dead=true;
-        /*var burn=game.add.sprite(this.x,this.y,"flame",0);
-        burn.anchor.setTo(0.5);
-        burn.animations.add('burn');
-        var a=burn.animations.play('burn',20,false,true);
+        this.life_grp.destroy();
+        this.burn=game.add.sprite(this.x,this.y,"fire",0);
+        this.burn.height*=this.width*0.5/this.burn.width;
+        this.burn.width=this.width/2;
+        this.burn.anchor.setTo(0.5);
+        var a=this.burn.animations.add('burn');
         a.onComplete.add(function(){
-            this.destroy();
-        },this);*/
-        this.destroy();// -> will call onDestroy event -> check LevelState.init (at the end) to see tower.onDestroy callback
+            this.burn.destroy();
+            this.burn=null;
+            this.destroy();// -> will call onDestroy event -> check LevelState.init (at the end) to see tower.onDestroy callback
+        },this);
+        a.play(20,true);
+        setTimeout(function(a){a.stop(false,true);},2500,a);
     }
-    //this.life_grp.bar.width=this.life*this.life_grp.coef;
+    else {
+        this.life_grp.x=this.x-this.life_grp.width/2;
+        this.life_grp.y=this.top-5-this.life_grp.height;
+        this.life_grp.bar.width=this.life*this.life_grp.coef;
+    }
 
 }
 

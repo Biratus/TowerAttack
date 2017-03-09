@@ -15131,12 +15131,20 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function (renderSession) {
     {
         renderSession.maskManager.pushMask(this._mask, renderSession);
     }
-
+    var maxtime=0;
+    var c;
     for (var i = 0; i < this.children.length; i++)
     {
+        //var s=game.time.now;
         this.children[i]._renderCanvas(renderSession);
+        /*var e=game.time.now;
+        //console.log(e+" "+s);
+        if(e-s>maxtime) {
+            console.log('lol');
+            maxtime=e;
+            c=this.children[i];
+        }*/
     }
-
     if (this._mask)
     {
         renderSession.maskManager.popMask(renderSession);
@@ -15703,12 +15711,19 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession, matrix)
             }
 
             renderSession.context.drawImage(this.tintedTexture, 0, 0, cw, ch, dx, dy, cw / resolution, ch / resolution);
+
         }
         else
         {
             var cx = this.texture.crop.x;
             var cy = this.texture.crop.y;
+            var s=new Date().getTime();
             renderSession.context.drawImage(this.texture.baseTexture.source, cx, cy, cw, ch, dx, dy, cw / resolution, ch / resolution);
+            var e=new Date().getTime();
+            //if(e!=s) console.log(e+" "+s);
+            if(e-s>35) {
+                //console.log(this.getBounds());
+            }
         }
     }
 
