@@ -81,6 +81,7 @@ function Unit(name,flag,tower,state) {
     }
 
     this.update = function(){
+        if(this.dead) return;
         if(this.arrived) this.attackTower();
         else {
             //var graph=game.add.graphics(0,0);
@@ -99,7 +100,6 @@ function Unit(name,flag,tower,state) {
             if(this.pi>=this.path.length) {
                 if(!this.toTower) this.goToTower(this.state.current.tower,false);
                 else {
-                    console.log('arrived stop dispatch');
                     this.animations.stop();
                     this.arrived=true;
                     this.onPathFinish.dispatch();
@@ -108,19 +108,17 @@ function Unit(name,flag,tower,state) {
         }
     }
 
-    this.kill=function(){
+    this.killUnit=function(){
         this.dead=true;
         this.animations.play('die',3,false,true);
     }
 
     this.goToTower=function(tower,linear) {
-        var dis=game.rnd.realInRange(tower.width*0.2,tower.width/2);
-        if(this.name=='archer') dis=game.rnd.realInRange(tower.range+1,tower.range/1.5);
-        var x=game.rnd.realInRange(-1,1);
-        var end={
-            "x":tower.x+x*dis,
-            "y":tower.bottom+Math.sqrt(Math.pow(dis,2)-Math.pow((x*dis),2))
-        };
+        var end;
+        do{
+            end=new Phaser.Circle(tower.x,tower.bottom,tower.range).random();
+            var good=end.y>tower.bottom+tower.range*0.01;
+        }while(!good)
 
         if(end.x+this.body.width/2>this.state.display.x+this.state.display.width) end.x=this.state.display.x+this.state.display.width-this.body.width/2;
         if(end.x-this.body.width/2<this.state.display.x) end.x=this.state.display.x+this.body.width/2;
@@ -146,20 +144,18 @@ function Unit(name,flag,tower,state) {
     this.animations.add('die',[50,55,60],3);
 
     this.frame=0;
+    this.dead=false;
 
-    var dis=game.rnd.realInRange(tower.width*0.2,tower.width/2);
-    if(this.name=='archer') dis=game.rnd.realInRange(tower.range+1,tower.range/1.5);
-    var x=game.rnd.realInRange(-1,1);
-    var end={
-        "x":tower.x+x*dis,
-        "y":tower.bottom+Math.sqrt(Math.pow(dis,2)-Math.pow((x*dis),2))
-    };
+    var end;
+    do{
+        end=new Phaser.Circle(tower.x,tower.bottom,tower.range).random();
+        var good=end.y>tower.bottom+tower.range*0.01;
+    }while(!good)
     this.anchor.setTo(0.5);
     this.width=this.state.display.width*0.2;
     this.height=this.state.display.width*0.2;
 
     game.physics.arcade.enable(this);
-    //this.body.collideWorldBounds=true;
     this.body.setSize(10,10,32,30);
 
     if(end.x+this.body.width/2>this.state.display.x+this.state.display.width) end.x=this.state.display.x+this.state.display.width-this.body.width/2;
@@ -190,18 +186,13 @@ Unit.animFromAngle=function(angle) {
         c++;
         i-=2/5;
     }
-    /*for(var i=1;i>=-1;i-=2/5) {
-        if(s>=i) return angleToAnim[c];
-        c++;
-    }*/
-    console.log('not found '+angle+" "+Math.sin(angle));
 }
 
 var angleToAnim=["Up","UpSide","Side","DownSide","Down"];
 
 Unit.Melee=function() {
     //Stats
-    this.life=20;
+    this.life=5;
     this.damage=10;
     this.attack_delay=2000;
     this.speed=2;

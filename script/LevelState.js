@@ -188,21 +188,23 @@ LevelState.prototype.preRender=function() {
 }
 
 LevelState.prototype.update=function() {
-
     if(this.win || this.lose()) this.backToMenu();
     game.physics.arcade.overlap(this.grps.unit,this.grps.res,function(unit,res) {
         this.collectRes(res.id,unit.id)
     },null,this);
-    if(!this.current.tower.unitInRange((this.current.tower.focus))) {
+
+    if(this.current.tower.focus>=0 && !this.current.tower.unitInRange(this.getUnit(this.current.tower.focus))) {
+        console.log('focus out of range');
         if(this.current.tower.next_to_focus.length>0) {
             this.current.tower.focus=this.current.tower.next_to_focus[0];
             this.current.tower.next_to_focus.shift();
         }
         else this.current.tower.focus=-1;
     }
+
     for(var i in this.units) {
         if(!this.units[i].exists) this.units.splice(i,1);
-        else {
+        else if(!this.units[i].dead) {
             if(this.current.tower.unitInRange(this.units[i])) {
                 if(this.current.tower.focus<0) this.current.tower.focus=this.units[i].id;//Tower has no focus
                 else if(this.current.tower.focus!=this.units[i].id) {//unit not focus by tower
@@ -227,8 +229,9 @@ LevelState.prototype.resumed=function() {
 
 LevelState.prototype.attackUnit=function(unit_id) {
     var u=this.getUnit(unit_id);
+    if(u.dead) return false;
     u.life-=this.current.tower.damage;
-    if(u.life<=0 && !u.dead) this.killUnit(unit_id);
+    if(u.life<=0) this.killUnit(unit_id);
 }
 
 LevelState.prototype.attackTower=function(unit_id) {
@@ -238,8 +241,9 @@ LevelState.prototype.attackTower=function(unit_id) {
 }
 
 LevelState.prototype.killUnit=function(unit_id) {
-    this.getUnit(unit_id).kill();
+    this.getUnit(unit_id).killUnit();
     if(this.current.tower.focus==unit_id) {
+        console.log('kill');
         this.current.tower.focus=-1;
         if(this.current.tower.next_to_focus.length>0) {
             this.current.tower.focus=this.current.tower.next_to_focus[0];
@@ -330,7 +334,6 @@ LevelState.prototype.nextTower=function() {
         x=game.world.bounds.left+this.raw.terrains[0].pos.offset*this.display.width;
         y=game.world.bounds.top-this.display.height;
     }
-    console.log(x+" "+y);
     //create sprite accordingly
     this.next_terrain={"tree":[],"grass":[],"dirt":[]};
     this.next_terrain.grass.push(game.add.tileSprite(x,y,this.display.width,this.display.height,"grass",null,this.grps.terrain));
@@ -374,6 +377,10 @@ LevelState.prototype.nextTower=function() {
     this.current.tower=new Tower(this.raw.towers[0],this);
     this.current.tower.x+=x;
     this.current.tower.y+=y;
+    this.current.tower.events.onDestroy.add(function(){
+        if(this.raw.towers.length>0) this.nextTower();
+        else if(this.units.length>0) this.win=true;
+    },this);
     this.raw.towers.shift();
 
     //reset unit path
