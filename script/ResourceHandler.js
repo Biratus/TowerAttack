@@ -13,21 +13,21 @@ function ResourceHandler(state,w,m,f) {
     Object.defineProperty(this,"wood",{
         set:function(val) {
             _wood=val;
-            this.text.wood.text=": "+_wood;
+            this.text.wood.text=_wood;
         },
         get:function(){return _wood;}
     });
     Object.defineProperty(this,"metal",{
         set:function(val) {
             _metal=val;
-            this.text.metal.text=": "+_metal;
+            this.text.metal.text=_metal;
         },
         get:function(){return _metal;}
     });
     Object.defineProperty(this,"food",{
         set:function(val) {
             _food=val;
-            this.text.food.text=": "+_food;
+            this.text.food.text=_food;
         },
         get:function(){return _food;}
     });
