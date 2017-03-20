@@ -1,6 +1,3 @@
-/**
- * Created by cleme on 25/02/2017.
- */
 var id_count=0;
 
 function Unit(name,flag,tower,state) {
@@ -40,13 +37,16 @@ function Unit(name,flag,tower,state) {
         graph.beginFill(0xffffff);
         graph.drawCircle(end.x,end.y,10);
         graph.endFill();
-        graph.beginFill(0xffffff);
-        graph.drawCircle(handleS.x,handleS.y,10);
-        graph.endFill();
+        if(handleS) {
 
-        graph.beginFill(0xffffff);
-        graph.drawCircle(handleE.x,handleE.y,10);
-        graph.endFill();*/
+            graph.beginFill(0xffffff);
+            graph.drawCircle(handleS.x,handleS.y,10);
+            graph.endFill();
+
+            graph.beginFill(0xffffff);
+            graph.drawCircle(handleE.x,handleE.y,10);
+            graph.endFill();
+        }*/
 
 
         var x = 1 / game.world.width;
@@ -59,7 +59,7 @@ function Unit(name,flag,tower,state) {
             var p={"x":px,"y":py,"angle":0};
             if(this.path.length>0) {
                 p.angle=game.math.angleBetweenPoints(p,this.path[this.path.length-1]);
-                if(Phaser.Point.distance(p,this.path[this.path.length-1])>this.speed) {
+                if(Phaser.Point.distance(p,this.path[this.path.length-1])>this.speed/2) {
                     this.path.push(p);
                 }
             }
@@ -130,11 +130,11 @@ function Unit(name,flag,tower,state) {
         this.toTower=true;
     };
 
-    this.animations.add('runUp',[0,5,10,15,20],5,true);
-    this.animations.add('runUpSide',[1,6,11,16,21],5,true);
-    this.animations.add('runSide',[2,7,12,17,22],5,true);
-    this.animations.add('runDownSide',[3,8,13,18,23],5,true);
-    this.animations.add('runDown',[4,9,14,19,24],5,true);
+    this.animations.add('runUp',[0,5,10,15,20],12,true);
+    this.animations.add('runUpSide',[1,6,11,16,21],12,true);
+    this.animations.add('runSide',[2,7,12,17,22],12,true);
+    this.animations.add('runDownSide',[3,8,13,18,23],12,true);
+    this.animations.add('runDown',[4,9,14,19,24],12,true);
 
     this.animations.add('attackUp',[25,30,35,40],4);
     this.animations.add('attackUpSide',[26,31,36,41],4);

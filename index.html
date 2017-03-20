@@ -1,7 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"><!-- manifest="cache.manifest">-->
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="application-name" content="Tower Attack"/>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <link rel="manifest" href="json/manifest.json">
+    <link rel="icon" sizes="192x192" href="img/icons/icon.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="img/icons/icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="192x192" href="img/icons/icon.png">
     <title>TowerAttack</title>
 
     <script src="script/jquery.min.js"></script>
@@ -17,7 +27,18 @@
     <script src="script/Tower.js"></script>
     <script src="script/Resource.js"></script>
     <script src="script/ResourceHandler.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/3.7.2/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDGoNtcuPf7EWmtxp7LlJewComfU64t_k4",
+            authDomain: "tower-attack-9cd59.firebaseapp.com",
+            databaseURL: "https://tower-attack-9cd59.firebaseio.com",
+            storageBucket: "tower-attack-9cd59.appspot.com",
+            messagingSenderId: "145872139242"
+        };
+        firebase.initializeApp(config);
+    </script>
     <style>
         body{
             margin:0;

@@ -1,6 +1,3 @@
-/**
- * Created by cleme on 25/02/2017.
- */
 var res_id_count=0;
 
 function Resource(type,x,y,state) {

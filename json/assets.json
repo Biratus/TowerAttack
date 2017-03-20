@@ -20,7 +20,6 @@
       "grass":"img/terrain/grass.png",
       "tree":"img/terrain/tree.png",
       "dirt":"img/terrain/dirt.png",
-
       "bg_menu":"img/bg_menu.png",
       "b_level1":"img/buttons/menu/b_level1.png",
       "b_level2":"img/buttons/menu/b_level2.png",
@@ -40,7 +39,9 @@
       "tank_button":{"src":"img/buttons/tank.png","fW":256,"fH":256},
       "worker_button":{"src":"img/buttons/worker.png","fW":256,"fH":256},
 
-      "menu":{"src":"img/buttons/menu.png","fW":366,"fH":121}
+      "menu":{"src":"img/buttons/menu.png","fW":366,"fH":121},
+
+      "fire":{"src":"img/spritesheet/fire.png","fW":64,"fH":128}
 
     }
   }
