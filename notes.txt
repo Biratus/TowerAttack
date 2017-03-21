@@ -1,0 +1,60 @@
+levels.json
+display height is the height of the screen without the UI
+
+Levels array:
+	flags array:
+		x: % of total width
+		y: % of total /!\display/!\ height
+	towers array:
+		x % total width
+		y % total /!\display/!\ height
+		img: image key
+		dmg: int
+		range: % of total width
+		attack_delay: int time in ms
+	units_path array:
+		Fx: Flag curve handle
+		Tx: Tower curve handle
+	units array: allowed unit key
+	res:
+		wood: int total number of wood
+		metal: int total number of metal
+		food: int total number of food
+		amount: % to give at the start
+	terrains array:
+		/!\ DO NOT SET POS FOR THE STARTING TERRAIN /!\
+		pos:position of the terrian relative to previous one, offset is automatically known with align value (top & bottom = offsetX left & right=offsetY)
+			align:string previous terrain alignment /!\ ALWAYS SET TO TOP /!\ Not developped for something else but easily could be /!\
+			offset: % of total width
+
+		tree array:
+			shape:
+				fx: graphic method to use (lineTo/moveTo/beizerCurve...)
+				points: arg of method //Use 200 as total game width and 300 as total /!\display height/!\ then rescale by setting pos.width/height 
+			pos: 
+				x: int=px	/	string=% of total width
+				y: int=px	/	string=% of total width
+				width: % of total width
+				height: % of total height
+				aX: anchorX		//Only set if you
+				ay: anchorY		//need to change anchor
+			
+		dirt array
+			shape:
+				fx: graphic method to use (lineTo/moveTo/curve...)
+				points: arg of method //Use 200 as total game width and 300 as total /!\display height/!\ then rescale by setting pos.width/height 
+			pos: 
+				x: int=px	string=% of total width
+				y: int=px	string=% of total width
+				width: % of total width
+				height: % of total height
+				aX: anchorX		//Only set if you
+				ay: anchorY		//need to change anchor
+	res_area array:
+		pos:
+			x: int=px	/	string=% relative to total game width
+			y: int=px	/	string=% relative to total game height
+			width: % of total width, height is set accordingly
+		points array: Used to build a polygon
+			x: int=px (use like shape.points)	/	string=relative to tree.shape or flag or tower side -> shapeindex+"_"+side
+			y: int=px (use like shape.points)	/	string=relative to tree.shape or flag or tower side -> shapeindex+"_"+side
