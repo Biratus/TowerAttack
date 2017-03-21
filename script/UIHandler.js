@@ -11,8 +11,6 @@ function UIHandler (state, units){
 
     this.state = state;
 
-    this.buttons=[];
-
     this.menu_b=game.add.button(20, 20, "menu",function(){this.actionOnClickMenu();}, this, 0,0,0,0,this);
     this.menu_b.height*=this.state.display.width*0.15/this.menu_b.width;
     this.menu_b.width=this.state.display.width*0.15;
@@ -29,14 +27,18 @@ function UIHandler (state, units){
     this.create_group.b_grp=game.add.group();
     this.create_group.cell_size=this.state.display.width/units.length;
 
+    this.buttons=this.create_group.b_grp.children;//handy reference to all unit buttons
+
     for(var i = 0; i < units.length ; i++){
         //console.log(cell_size/2+i*game.world.width/units.length+" "+bg.centerY);
-        var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",null,0,0,1);
+        var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",null,null,0,0,1);
 
         b.anchor.setTo(0.5);
         b.width*=0.9*bg.height/b.height;
         b.height=0.9*bg.height;
         b.events.onInputUp.add(function(){this.uiHandler.onUnitClick(this);},b);
+
+        b.frame=0;
 
         b.setMask=function() {
             this.graph=this.graph || game.add.graphics(0,0);
@@ -45,7 +47,6 @@ function UIHandler (state, units){
             this.graph.mask.beginFill(0xffffff);
             this.graph.mask.drawRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height);
         }
-        //console.log(b.width+" "+b.height);
 
         b.setMask();
 
@@ -53,8 +54,7 @@ function UIHandler (state, units){
 
         b.uiHandler=this;
 
-        this.buttons.push(b);
-        this.create_group.b_grp.add(this.buttons[this.buttons.length-1]);
+        this.create_group.b_grp.add(b);
     }
     this.create_group.add(this.create_group.b_grp);
 

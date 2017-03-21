@@ -6,8 +6,8 @@ LevelState.prototype = Object.create(Phaser.State.prototype);
 LevelState.prototype.constructor = LevelState;
 
 LevelState.prototype.init=function(level_nb) {
-    var level_param = JSON.parse(this.game.cache.getText("levels")).levels[level_nb];
-    //b=game.add.image(0,0,"tower");
+    var level_param = JSON.parse(this.game.cache.getText("levels")).levels;
+    level_param=(level_nb>=level_param.length)?level_param[level_param.length-1]:level_param[level_nb];
     this.display={
         "height":0.9*game.world.height,
         "width":game.world.width,
@@ -15,7 +15,7 @@ LevelState.prototype.init=function(level_nb) {
         "y":0
         };
     this.units=[];
-
+    this.win=false;
     this.grps={
         "terrain":game.add.group(),
         "objects":game.add.group(),
@@ -454,6 +454,7 @@ LevelState.prototype.getRes=function(id) {
 LevelState.prototype.backToMenu=function() {
     this.uiHandler.pause();
     this.res_timeout.pause();
+    game.state.clearCurrentState();
     game.state.start('MenuState',true,false);
 }
 

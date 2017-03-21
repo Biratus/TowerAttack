@@ -20,7 +20,13 @@ MenuState.prototype.create=function() {
 }
 
 MenuState.prototype.startLevel= function(button) {
-    game.state.start('LevelState',true,false,0);
+    var lvl=0;
+    var key=button.key.charAt(button.key.length-1);
+    try {
+        lvl=parseInt(key)-1;
+    }catch(e) {console.error(e);}
+    game.state.clearCurrentState();
+    game.state.start('LevelState',true,false,lvl);
 }
 
 MenuState.prototype.credits = function() {
