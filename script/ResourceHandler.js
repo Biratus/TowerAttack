@@ -1,7 +1,3 @@
-/**
- * Created by cleme on 07/03/2017.
- */
-
 function ResourceHandler(state,w,m,f) {
     Phaser.Group.call(this,game);
 
@@ -50,8 +46,9 @@ function ResourceHandler(state,w,m,f) {
         }
     }
     for(var i=0;i<3;i++) {
-        var t=game.add.text(cell_s*(1+i*2),this.bg.height/2,this[this.int_to_res[i]],{
-            "fill":"white"
+        var t=game.add.text(cell_s*(1+i*2),5,this[this.int_to_res[i]],{
+            "fill":"white",
+            "fontSize":"15px"
         },this);
         this.text[this.int_to_res[i]]=t;
     }

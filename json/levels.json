@@ -7,8 +7,8 @@
         "img":"tower",
         "range":"0.15",
         "dmg": 3,
-        "attack_delay":800,
-        "life":100
+        "attack_delay":2000,
+        "life":50
       }],
       "units_path":[
         {
@@ -23,13 +23,13 @@
           {
             "shape":[
               {"fx":"moveTo","points":[0,0]},
-              {"fx":"lineTo","points":[100,0]},
-              {"fx":"quadraticCurveTo","points":[100,75,75,75]},
+              {"fx":"lineTo","points":[120,0]},
+              {"fx":"quadraticCurveTo","points":[120,50,90,75]},
               {"fx":"quadraticCurveTo","points":[25,75,25,130]},
               {"fx":"quadraticCurveTo","points":[25,150,0,150]},
               {"fx":"lineTo","points":[0,0]}
             ],
-            "pos":{"x":0,"y":0,"width":0.5,"height":0.5}
+            "pos":{"x":0,"y":0,"width":0.6,"height":0.5}
           },
           {
             "shape":[

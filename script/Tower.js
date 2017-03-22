@@ -41,7 +41,6 @@ function Tower(param,state) {
         get:function(){return _focus},
        set:function(val) {
            _focus=val;
-           console.log('set to '+val);
            if(val>=0) this.last_attack=game.time.now-this.attack_delay;//so unit don't get shot instantly
        }
     });
@@ -53,7 +52,6 @@ Tower.prototype.update=function() {
     if(this.focus>=0) {
         if(!this.last_attack || game.time.now-this.last_attack>=this.attack_delay) {
             this.state.attackUnit(this.focus);
-            console.log('attack tower');
             this.last_attack=game.time.now;
         }
     }
