@@ -20,7 +20,9 @@
       "grass":"img/terrain/grass.png",
       "tree":"img/terrain/tree.png",
       "dirt":"img/terrain/dirt.png",
+
       "bg_menu":"img/bg_menu.png",
+      "bg_credits":"img/bg_credits.png",
       "b_level1":"img/buttons/menu/b_level1.png",
       "b_level2":"img/buttons/menu/b_level2.png",
       "b_level3":"img/buttons/menu/b_level3.png",
@@ -43,6 +45,10 @@
 
       "fire":{"src":"img/spritesheet/fire.png","fW":64,"fH":128}
 
+    },
+    "audio":{
+      "title":"audio/TAP-Titletheme.wav",
+      "main":"audio/TAP-main theme.wav"
     }
   }
 }

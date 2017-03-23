@@ -111,7 +111,10 @@ LevelState.prototype.init=function(level_nb) {
     this.uiHandler=new UIHandler(this,level_param.units);
 
     this.raw.res_area=level_param.res_area;
-
+    
+    this.music = game.add.audio('main');
+    this.music.loop = true;
+    this.music.play();
 }
 
 LevelState.prototype.preRender=function() {
@@ -219,6 +222,10 @@ LevelState.prototype.resumed=function() {
     console.log('resume');
     this.uiHandler.resume();
     this.res_timeout.resume();
+}
+
+LevelState.prototype.shutdown=function() {
+    this.music.stop();
 }
 
 LevelState.prototype.attackUnit=function(unit_id) {

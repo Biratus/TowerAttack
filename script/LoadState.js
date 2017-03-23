@@ -19,6 +19,7 @@ LoadState.prototype.preload=function() {
         c=this.datas.assets.spritesheet[i];
         this.load.spritesheet(i,c.src,c.fW,c.fH);
     }
+    for(var i in this.datas.assets.audio) this.load.audio(i,this.datas.assets.audio[i]);
     console.log('load img finish');
 
     this.load.text("levels","json/levels.json");
