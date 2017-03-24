@@ -192,60 +192,60 @@ var angleToAnim=["Up","UpSide","Side","DownSide","Down"];
 
 Unit.Melee=function() {
     //Stats
-    this.life=5;
-    this.damage=10;
-    this.attack_delay=2000;
+    this.life=300;
+    this.damage=40;
+    this.attack_delay=1000;
     this.speed=2;
     this.range=100;
 }
 
 Unit.Melee.RES_NEEDED={wood:1,
     metal:1,
-    food:1
+    food:2
 };
-Unit.Melee.PROD_TIME=1000;
+Unit.Melee.PROD_TIME=1500;
 
 Unit.Tank=function() {
     //Stats
-    this.life=20;
-    this.damage=10;
-    this.attack_delay=2000;
+    this.life=600;
+    this.damage=20;
+    this.attack_delay=1000;
     this.speed=2;
     this.range=100;
 }
 
 Unit.Tank.RES_NEEDED={wood:1,
-    metal:1,
-    food:1
+    metal:3,
+    food:2
 };
-Unit.Tank.PROD_TIME=1000;
+Unit.Tank.PROD_TIME=2000;
 
 Unit.Archer=function() {
     //Stats
-    this.life=5;
-    this.damage=1;
-    this.attack_delay=2000;
+    this.life=150;
+    this.damage=50;
+    this.attack_delay=1000;
     this.speed=2;
     this.range=100;
 }
 
-Unit.Archer.RES_NEEDED={wood:1,
+Unit.Archer.RES_NEEDED={wood:2,
     metal:1,
     food:1
 };
-Unit.Archer.PROD_TIME=1000;
+Unit.Archer.PROD_TIME=1500;
 
 Unit.Worker=function() {
     //Stats
-    this.life=20;
-    this.damage=10;
-    this.attack_delay=2000;
+    this.life=100;
+    this.damage=20;
+    this.attack_delay=1000;
     this.speed=2;
     this.range=100;
 }
 
 Unit.Worker.RES_NEEDED={wood:1,
-    metal:1,
+    metal:0,
     food:1
 };
 Unit.Worker.PROD_TIME=1000;
