@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#20-03-2017 Version 2.0
+#21-03-2017 Version 2.1
 
 NETWORK:
 *
@@ -54,3 +54,5 @@ img/flag.png
 img/life_bar.png
 img/life_bg.png
 img/tower.png
+audio/TAP-Titletheme.wav
+audio/TAP-main theme.wav
