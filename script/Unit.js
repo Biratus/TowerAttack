@@ -67,7 +67,6 @@ function Unit(name,flag,tower,state) {
         }
         this.pi=0;
         if(onfinish) this.onPathFinish.addOnce(onfinish,ctx,arg);
-        //this.degree =Math.round(180 * (p.angle) / Math.PI);
     };
     this.attackTower = function(){
         if(!this.last_attack) {
