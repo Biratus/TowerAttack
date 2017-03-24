@@ -102,7 +102,8 @@
         }
       ],
       "units":["archer","melee","tank","worker"],
-      "res":{"wood":50,"metal":50,"food":50,"amount":0.33},
+      "res":{"start_wood":0,"start_metal":0,"start_food":0,
+        "total_wood":10,"total_metal":10,"total_food":10},
       "terrains":[{
         "tree":[
           {
