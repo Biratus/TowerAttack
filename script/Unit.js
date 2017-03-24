@@ -191,7 +191,7 @@ var angleToAnim=["Up","UpSide","Side","DownSide","Down"];
 
 Unit.Melee=function() {
     //Stats
-    this.life=300;
+    this.life=350;
     this.damage=40;
     this.attack_delay=1000;
     this.speed=2;
@@ -221,7 +221,7 @@ Unit.Tank.PROD_TIME=2000;
 
 Unit.Archer=function() {
     //Stats
-    this.life=150;
+    this.life=250;
     this.damage=50;
     this.attack_delay=1000;
     this.speed=2;
@@ -236,7 +236,7 @@ Unit.Archer.PROD_TIME=1500;
 
 Unit.Worker=function() {
     //Stats
-    this.life=100;
+    this.life=200;
     this.damage=20;
     this.attack_delay=1000;
     this.speed=2;

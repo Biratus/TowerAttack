@@ -6,9 +6,9 @@
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 3,
-        "attack_delay":2000,
-        "life":50
+        "dmg": 50,
+        "attack_delay":500,
+        "life":1500
       }],
       "units_path":[
         {
@@ -17,8 +17,8 @@
         }
       ],
       "units":["archer","melee","tank","worker"],
-      "res":{"start_wood":2,"start_metal":2,"start_food":2,
-        "total_wood":10,"total_metal":10,"total_food":10},
+      "res":{"start_wood":3,"start_metal":1,"start_food":5,
+        "total_wood":20,"total_metal":18,"total_food":23},
       "terrains":[{
         "tree":[
           {
@@ -82,16 +82,16 @@
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 3,
-        "attack_delay":2000,
-        "life":50
+        "dmg": 50,
+        "attack_delay":500,
+        "life":1500
       },{
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 3,
-        "attack_delay":2000,
-        "life":50
+        "dmg": 50,
+        "attack_delay":500,
+        "life":2000
       }],
       "units_path":[
         {
@@ -103,8 +103,8 @@
         }
       ],
       "units":["archer","melee","tank","worker"],
-      "res":{"start_wood":2,"start_metal":2,"start_food":2,
-        "total_wood":10,"total_metal":10,"total_food":10},
+      "res":{"start_wood":3,"start_metal":1,"start_food":5,
+        "total_wood":30,"total_metal":28,"total_food":33},
       "terrains":[{
         "tree":[
           {
