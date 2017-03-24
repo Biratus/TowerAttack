@@ -43,11 +43,11 @@ LevelState.prototype.init=function(level_nb) {
     //assign resources
     this.res_on_map=[];
 
-    this.resources=new ResourceHandler(this,Math.round(level_param.res.wood*level_param.res.amount),Math.round(level_param.res.metal*level_param.res.amount),Math.round(level_param.res.food*level_param.res.amount));
+    this.resources=new ResourceHandler(this,level_param.res.start_wood,level_param.res.start_metal,level_param.res.start_food);
 
-    this.totalRes={"wood":level_param.res.wood-this.resources.wood,
-        "metal":level_param.res.metal-this.resources.metal,
-        "food":level_param.res.metal-this.resources.food};
+    this.totalRes={"wood":level_param.res.total_wood,
+        "metal":level_param.res.total_metal,
+        "food":level_param.res.total_food};
 
     //create background stuff
     this.terrain={"tree":[],"grass":[],"dirt":[]};
@@ -111,10 +111,12 @@ LevelState.prototype.init=function(level_nb) {
     this.uiHandler=new UIHandler(this,level_param.units);
 
     this.raw.res_area=level_param.res_area;
-    
+
     this.music = game.add.audio('main');
     this.music.loop = true;
     this.music.play();
+    this.is_exiting=false;
+
 }
 
 LevelState.prototype.preRender=function() {
@@ -179,12 +181,12 @@ LevelState.prototype.preRender=function() {
         g.endFill();
 
         setTimeout(function(g){g.destroy()},2000,g);*/
-
         this.res_timeout=new Timer(function(state){state.spawnRes();},3000,this);
     }
 }
 
 LevelState.prototype.update=function() {
+    if(this.is_exiting) return;
     if(this.win || this.lose()) this.backToMenu();
 
     game.physics.arcade.overlap(this.grps.unit,this.grps.res,function(unit,res) {
@@ -222,10 +224,6 @@ LevelState.prototype.resumed=function() {
     console.log('resume');
     this.uiHandler.resume();
     this.res_timeout.resume();
-}
-
-LevelState.prototype.shutdown=function() {
-    this.music.stop();
 }
 
 LevelState.prototype.attackUnit=function(unit_id) {
@@ -277,6 +275,7 @@ LevelState.prototype.onResourceTap=function(res_id) {
         }
     }
     if(id<0) return;
+    this.getUnit(id).toTower=false;
     this.getUnit(id).changePath(null,{"x":res.x,"y":res.y});
 }
 
@@ -461,8 +460,17 @@ LevelState.prototype.getRes=function(id) {
 LevelState.prototype.backToMenu=function() {
     this.uiHandler.pause();
     this.res_timeout.pause();
-    game.state.clearCurrentState();
-    game.state.start('MenuState',true,false);
+    this.music.stop();
+    game.camera.fade(0x000000,700);
+    this.is_exiting=true;
+    game.camera.onFadeComplete.addOnce(function(){
+        console.log('complete');
+        game.world.setBounds(0,0,game.camera.width,game.camera.height);
+        game.camera.resetFX();
+        game.camera.reset();
+        game.state.start('MenuState',true,false);
+    });
+
 }
 
 LevelState.prototype.render=function() {

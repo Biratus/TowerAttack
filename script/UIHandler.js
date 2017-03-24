@@ -139,7 +139,6 @@ function Timer(callback, delay,ctx,arg) {
         this.isRunning=false;
         this.remaining = this.remaining-(new Date().getTime() - this.start);
     };
-    //Timer doesn't call the callback in its context, the context is given as an argument
     this.resume = function() {
         if(this.isRunning) return;
         this.start = new Date().getTime();
