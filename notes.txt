@@ -17,10 +17,12 @@ Levels array:
 		Tx: Tower curve handle
 	units array: allowed unit key
 	res:
-		wood: int total number of wood
-		metal: int total number of metal
-		food: int total number of food
-		amount: % to give at the start
+		start_wood: int number of wood at start
+		start_metal: int number of metal at start
+		start_food: int number of food at start
+		total_wood: int total number of wood
+		total_metal: int total number of metal
+		total_food: int total number of food
 	terrains array:
 		/!\ DO NOT SET POS FOR THE STARTING TERRAIN /!\
 		pos:position of the terrian relative to previous one, offset is automatically known with align value (top & bottom = offsetX left & right=offsetY)
