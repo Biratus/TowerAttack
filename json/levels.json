@@ -6,9 +6,9 @@
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 50,
-        "attack_delay":500,
-        "life":1500
+        "dmg": 3,
+        "attack_delay":2000,
+        "life":50
       }],
       "units_path":[
         {
@@ -82,16 +82,16 @@
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 50,
-        "attack_delay":500,
-        "life":1500
+        "dmg": 3,
+        "attack_delay":2000,
+        "life":50
       },{
         "x":0.8,"y":0.1,
         "img":"tower",
         "range":"0.15",
-        "dmg": 50,
-        "attack_delay":500,
-        "life":2000
+        "dmg": 3,
+        "attack_delay":2000,
+        "life":50
       }],
       "units_path":[
         {
