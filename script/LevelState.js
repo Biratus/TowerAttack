@@ -257,12 +257,12 @@ LevelState.prototype.canCreateUnit=function(unit_type) {
 
 }
 
-LevelState.prototype.createUnit=function(unit_type) {
-    this.units.push(new Unit(unit_type,this.current.flag,this.current.tower,this));
+LevelState.prototype.createUnit=function(unit_type) {this.units.push(new Unit(unit_type,this.current.flag,this.current.tower,this));}
+LevelState.prototype.useResFor=function(unit_type) {
     var res_need=Unit[unit_type.capitalizeFirstLetter()].RES_NEEDED;
-    this.resources.wood=this.resources.wood-res_need.wood;
-    this.resources.metal=this.resources.metal-res_need.metal;
-    this.resources.food=this.resources.food-res_need.food;
+    this.resources.wood-=res_need.wood;
+    this.resources.metal-=res_need.metal;
+    this.resources.food-=res_need.food;
 }
 
 LevelState.prototype.onResourceTap=function(res_id) {
@@ -289,7 +289,6 @@ LevelState.prototype.collectRes=function(res_id,unit_id) {
         }
     }
     this.uiHandler.checkCanCreate();
-    //console.log(this.resources);
     this.getUnit(unit_id).goToTower(this.current.tower,true);
 }
 
@@ -446,6 +445,11 @@ LevelState.prototype.lose=function() {
     for(var i in this.uiHandler.buttons) {
         can=can || this.canCreateUnit(this.uiHandler.buttons[i].unit_type);
     }
+    if(!can) {
+        for(var i in this.totalRes) {
+            if(this.totalRes[i]>0) can=true;
+        }
+    }
     return !can && this.units.length==0 && this.current.tower.life>0;
 }
 
@@ -464,7 +468,6 @@ LevelState.prototype.backToMenu=function() {
     game.camera.fade(0x000000,700);
     this.is_exiting=true;
     game.camera.onFadeComplete.addOnce(function(){
-        console.log('complete');
         game.world.setBounds(0,0,game.camera.width,game.camera.height);
         game.camera.resetFX();
         game.camera.reset();

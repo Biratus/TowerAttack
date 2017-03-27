@@ -30,7 +30,6 @@ function UIHandler (state, units){
     this.buttons=this.create_group.b_grp.children;//handy reference to all unit buttons
 
     for(var i = 0; i < units.length ; i++){
-        //console.log(cell_size/2+i*game.world.width/units.length+" "+bg.centerY);
         var b=game.add.button(this.create_group.cell_size*(i+0.5),bg.centerY,units[i]+"_button",null,null,0,0,1);
 
         b.anchor.setTo(0.5);
@@ -65,6 +64,8 @@ UIHandler.prototype.constructor = UIHandler;
 
 UIHandler.prototype.onUnitClick=function(button) {
     button.input.enabled=false;
+    this.state.useResFor(button.unit_type);
+    this.checkCanCreate();
     button.timer=new Timer(function(b){
         b.uiHandler.state.createUnit(b.unit_type);
         b.input.enabled=b.uiHandler.state.canCreateUnit(b.unit_type);
@@ -77,8 +78,7 @@ UIHandler.prototype.onUnitClick=function(button) {
 UIHandler.prototype.checkCanCreate=function() {
     for(var i in this.buttons) {
         if(!this.buttons[i].timer || !this.buttons[i].timer.isRunning) {
-            if(this.state.canCreateUnit(this.buttons[i].unit_type)) this.buttons[i].input.enabled=true;
-            else this.buttons[i].input.enabled=false;
+            this.buttons[i].input.enabled=this.state.canCreateUnit(this.buttons[i].unit_type);
         }
 
     }

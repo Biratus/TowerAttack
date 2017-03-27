@@ -8,6 +8,7 @@ function ResourceHandler(state,w,m,f) {
 
     Object.defineProperty(this,"wood",{
         set:function(val) {
+            if(val<0) console.warn('Negative Resource assignment - wood');
             _wood=(val<0)?0:val;
             this.text.wood.text=_wood;
         },
@@ -15,6 +16,7 @@ function ResourceHandler(state,w,m,f) {
     });
     Object.defineProperty(this,"metal",{
         set:function(val) {
+            if(val<0) console.warn('Negative Resource assignment - metal');
             _metal=(val<0)?0:val;
             this.text.metal.text=_metal;
         },
@@ -22,6 +24,7 @@ function ResourceHandler(state,w,m,f) {
     });
     Object.defineProperty(this,"food",{
         set:function(val) {
+            if(val<0) console.warn('Negative Resource assignment - food');
             _food=(val<0)?0:val;
             this.text.food.text=_food;
         },
